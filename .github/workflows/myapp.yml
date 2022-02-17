@@ -1,45 +1,58 @@
-# This is a basic workflow to help you get started with Actions
 
-name: CI
+name : Name_whatever_you_want
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch
+
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches:
+      - master
+  
+#A workflow run is made up of one or more jobs. Jobs run in parallel by default. 
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+    # Here job is to build the app
+
+    build:
+        #The type of machine to run the job on. The machine can be either a GitHub-hosted runner, or a self-hosted runner.
+        Given below more about runs-on environment.\
+
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+        #A job contains a sequence of tasks called steps. Steps can run commands, run setup tasks, or run an action in your repository, a public repository, or an action 
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v2.5.1
-        with:
-         version: 12
-      - name: GitHub Action for Yarn
-  # You may pin to the exact commit or the version.
-  # uses: Borales/actions-yarn@4965e1a0f0ae9c422a9a5748ebd1fb5e097d22b9
-        uses: Borales/actions-yarn@v2.3.0
-        with:
-    # Yarn command
-           cmd: install
-      - name: Creating Build
-        uses: yarn build
-      - name: installing surge
-        uses: npm install -g surge
-      - name: deploying on surge
-        uses: surge ./build http://first_app_react.surge.sh --token ${{secrets.myapp}}
+    name: Deploying to surge
+    steps:
+            #This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+
+            - uses: actions/checkout@v2
+
+            #This action sets by node environment for use in actions.A beta release of Node which adds reliability for pulling node distributions.
+
+            - name: Install Node.js
+              uses: actions/setup-node@v2-beta
+              with:
+                   node-version: 12
+                
+            # Yarn Installation
+
+            - name: Prepare for Yarn Installation
+              run: curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+            - name: install yarn
+              run: sudo apt update && sudo apt install yarn
+            - name: Install Packages
+              run: yarn install
+            - name: Build React App
+              run: yarn build
+
+            # Deploying on Surge
+
+            - name: Install Surge
+              run: npm install -g surge
+            - name: Run surge
+              run: surge ./build http://first_app_react.surge.sh/ --token ${{ secrets.myapp }}
+
+
+
   
