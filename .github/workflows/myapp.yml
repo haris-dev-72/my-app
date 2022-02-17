@@ -34,7 +34,7 @@ jobs:
               with: 
                 cmd: install
 
-            - name: install yarn
+            - name: install yarn --ignore-engines
               run: sudo apt update && sudo apt install yarn
             - name: Install Packages
               run: yarn install
